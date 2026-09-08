@@ -5,21 +5,29 @@
 
 #include "mbed.h"
 #include "USBSerial.h"
+#include "AGabriel_binaryutils.hpp"
+
+#define LED1 LED_BUILTIN
+#define delay 1000 //1 HZ = 1 sec delay
+#define Register_Address (uint32_t*)0x50000504 //P0
+#define DIR (uint32_t*)0x50000514
+#define Register (uint8_t)13
 
 // main() runs in its own thread in the OS
 USBSerial serial;
 
 int main(){
 
-uint32_t solo = 0;
-
     while(1){
-//serial.printf("Connected!\r\n"); //debug line
+
+    setbit(DIR, Register);
+
+    setbit(Register_Address, Register);
+    thread_sleep_for(delay);
+
+    clearbit(Register_Address, Register);
+    thread_sleep_for(delay);
 
 
-
-ThisThread::sleep_for(1000ms); //sleeps instead of running very fast
-
-}}
-
-
+    }
+}

@@ -1,0 +1,3 @@
+BUILD\ARDUINO_NANO33BLE_SENSE\ARMC6\mbed-os\platform\source\TARGET_CORTEX_M\TOOLCHAIN_ARM\except.o: \
+  mbed-os\platform\source\TARGET_CORTEX_M\TOOLCHAIN_ARM\except.S \
+  BUILD\ARDUINO_NANO33BLE_SENSE\ARMC6\mbed_config.h

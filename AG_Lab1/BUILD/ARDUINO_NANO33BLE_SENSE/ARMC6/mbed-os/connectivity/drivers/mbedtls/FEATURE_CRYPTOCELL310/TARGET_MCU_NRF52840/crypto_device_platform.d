@@ -1,0 +1,19 @@
+BUILD\ARDUINO_NANO33BLE_SENSE\ARMC6\mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\TARGET_MCU_NRF52840\crypto_device_platform.o: \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\TARGET_MCU_NRF52840\crypto_device_platform.c \
+  BUILD\ARDUINO_NANO33BLE_SENSE\ARMC6\mbed_config.h \
+  mbed-os\connectivity\mbedtls\platform\inc\platform_alt.h \
+  mbed-os\connectivity\mbedtls\platform\inc\platform_mbed.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\mbedtls_device.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\TARGET_MCU_NRF52840\crypto_device_platform.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\crys_rnd.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\crys_error.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\ssi_pal_types.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\ssi_pal_types_plat.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\ssi_aes.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\ssi_aes_error.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\ssi_aes_defs.h \
+  mbed-os\targets\TARGET_NORDIC\TARGET_NRF5x\TARGET_SDK_15_0\modules\nrfx\mdk\nrf52840.h \
+  mbed-os\cmsis\CMSIS_5\CMSIS\TARGET_CORTEX_M\Include\core_cm4.h \
+  mbed-os\targets\TARGET_NORDIC\TARGET_NRF5x\TARGET_SDK_15_0\modules\nrfx\mdk\system_nrf52840.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\sns_silib.h \
+  mbed-os\connectivity\drivers\mbedtls\FEATURE_CRYPTOCELL310\include\cryptocell310\internal\crys_rnd.h
