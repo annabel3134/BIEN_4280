@@ -13,7 +13,7 @@
     {
         "module": "[lib]\\c_w.l",
         "size": {
-            ".text": 4162,
+            ".text": 4206,
             ".data": 16,
             ".bss": 348,
             ".text-delta": 0,
@@ -57,10 +57,10 @@
     {
         "module": "main.o",
         "size": {
-            ".text": 162,
+            ".text": 186,
             ".data": 0,
             ".bss": 1140,
-            ".text-delta": 0,
+            ".text-delta": 8,
             ".data-delta": 0,
             ".bss-delta": 0
         }
@@ -112,7 +112,7 @@
     {
         "module": "mbed-os\\platform",
         "size": {
-            ".text": 9725,
+            ".text": 9821,
             ".data": 64,
             ".bss": 416,
             ".text-delta": 0,
@@ -146,8 +146,8 @@
         "summary": {
             "static_ram": 12179,
             "static_ram_delta": 0,
-            "total_flash": 58942,
-            "total_flash_delta": 0
+            "total_flash": 59106,
+            "total_flash_delta": 8
         }
     }
 ]

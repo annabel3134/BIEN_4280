@@ -11,8 +11,8 @@
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
 #define Register (uint8_t)13 //Register 13 for for P0.13
 enum Blink_Speed{NO_ERROR = 1000, //100% duty cycle
-ATTN_REQ = 500, //50% duty cycle
-FATAL_ERROR = 100}; //10% duty cycle
+ATTN_REQ = 250, //75% duty cycle
+FATAL_ERROR = 100}; //50% duty cycle
 
 
 
@@ -26,7 +26,7 @@ int state = 0;
 int delay = NO_ERROR;
 
     while (true) {
-
+        serial.printf("State = %d\r\n", state);
         switch (state) {
             case 0:
                 delay = NO_ERROR; //1000 ms
@@ -52,6 +52,10 @@ int delay = NO_ERROR;
         }
 
         // Switch state for cases above
-        state = (state + 1) % 3;
+        state += 1;
+        if (state > 2){
+
+            state = 0;
+        }
         }
     }
