@@ -6,6 +6,7 @@
 #include "mbed.h"
 #include "USBSerial.h"
 #include "AGabriel_binaryutils.hpp"
+#include "Mail.h"
 
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
 #define OUT (uint32_t*)0x50000504 //Out pin
