@@ -1,6 +1,6 @@
 /* Name: Annabel Gabriel
-   Date: 9/8/2026
-   Description: Main Function - Blinks Light at Set Speeds
+   Date: 9/15/2026
+   Description: Main Function - Blinks Light at Set Speeds and Coorosponding different colors while stating the status
 */
 
 #include "mbed.h"
