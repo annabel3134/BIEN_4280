@@ -4,6 +4,7 @@
 #include "Mail.h"
 #include "PwmOut.h"
 #include "nrf_pwm.h"
+#include "hal/pwmout_api.h"
 
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
 #define OUT (uint32_t*)0x50000504 //Out pin
@@ -12,9 +13,7 @@
 
 #define LED_RED_PIN (uint8_t)24
 #define LED_GREEN_PIN (uint8_t)16
-//#define LED_BLUE_PIN (uint8_t)8
-
-PwmOut led(LED_BLUE_PIN);
+#define LED_BLUE_PIN (uint8_t)8
 
 //Information Being Sent
 typedef struct{
@@ -98,7 +97,7 @@ void vanilla(){
 //use pwm out class to do the same as vanilla (diff speed)
 void chocolate(){
     //receive message
-
+            PwmOut led(LED_BLUE_PIN);
             LED_BLUE_PIN.period(period);
 
             while(1){
@@ -110,10 +109,10 @@ void chocolate(){
 
                 message_t* messageC = (message_t*)evt.value.p;
 
-                float dutyC = (messageC->duty_cycle)/1000;
+                float dutyC_Percent = (messageC->duty_cycle)/1000;
     
 
-                led.write(dutyC);
+                led.write(dutyC_Percent);
 
                 poolC.free(messageC);
 
@@ -126,7 +125,26 @@ void chocolate(){
 
 }
 
+//use HAL to do the same
 void strawberry(){
+    pwmout_t pwm;
+    pwmout_init(&pwm, LED_RED_PIN);
+
+    while(1){
+    osEvent evt = queueV.get();
+
+    if(evt.status == osEventMessage)
+    {
+            //receive message
+            message_t* messageS = (message_t*)evt.value.p;
+
+            float dutyS_Percent = (messageS->duty_cycle)/1000;
+            pwmout_write(&pwm, dutyS_Percent);
+            pwmout_period_ms(&pwm, period);
+
+            pwmout_free(&pwm);
+        }
+    }
 
 }
 
