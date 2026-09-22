@@ -2,6 +2,8 @@
 #include "USBSerial.h"
 #include "AGabriel_binaryutils.hpp"
 #include "Mail.h"
+#include "PwmOut.h"
+#include "nrf_pwm.h"
 
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
 #define OUT (uint32_t*)0x50000504 //Out pin
@@ -10,7 +12,9 @@
 
 #define LED_RED_PIN (uint8_t)24
 #define LED_GREEN_PIN (uint8_t)16
-#define LED_BLUE_PIN (uint8_t)8
+//#define LED_BLUE_PIN (uint8_t)8
+
+PwmOut led(LED_BLUE_PIN);
 
 //Information Being Sent
 typedef struct{
@@ -18,6 +22,7 @@ typedef struct{
     float duty_cycle;
 } message_t;
 
+int period = 2;
 
 //prepare memory pool
 MemoryPool<message_t, 9> poolV;
@@ -64,38 +69,74 @@ void ice_cream_man(){
 //Named Vanilla - will rapidly flash green light. 
 //should rely on a queue for percentage PWM
 void vanilla(){
+    
+    while(1){
     osEvent evt = queueV.get();
 
     if(evt.status == osEventMessage)
     {
             //receive message
-            message_t* message = (message_t*)evt.value.p;
+            message_t* messageV = (message_t*)evt.value.p;
 
-            float duty = messageV->duty_cycle;
+            float dutyV = messageV->duty_cycle;
 
             while(1){
             //Flash at set rate
             setbit(OUT, LED_GREEN_PIN);
             //setbit(OUT, Register);
-            thread_sleep_for(duty);
+            thread_sleep_for(dutyV);
             
             clearbit(OUT, LED_GREEN_PIN);
             //clearbit(OUT, Register);
-            thread_sleep_for(duty);
+            thread_sleep_for(dutyV);
+            }
+            poolV.free(messageV);
         }
-    }
-}   
+    }   
+}
 
+//use pwm out class to do the same as vanilla (diff speed)
+void chocolate(){
+    //receive message
+
+            LED_BLUE_PIN.period(period);
+
+            while(1){
+
+                osEvent evt = queueC.get();
+
+                if(evt.status == osEventMessage)
+                {
+
+                message_t* messageC = (message_t*)evt.value.p;
+
+                float dutyC = (messageC->duty_cycle)/1000;
+    
+
+                led.write(dutyC);
+
+                poolC.free(messageC);
+
+
+                }
+
+            }
+   
+
+
+}
+
+void strawberry(){
+
+}
 
 // main() runs in its own thread in the OS
-
-
 int main()
 {
     ice_cream_man_Thread.start(ice_cream_man);
     vanilla_Thread.start(vanilla);
-    //chocolate_Thread.start(chocolate);
-    //strawberry_Thread.start(strawberry);
+    chocolate_Thread.start(chocolate);
+    strawberry_Thread.start(strawberry);
 
     while (true) {
         thread_sleep_for(2000);
