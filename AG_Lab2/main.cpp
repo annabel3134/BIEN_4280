@@ -4,16 +4,19 @@
 #include "Mail.h"
 #include "PwmOut.h"
 #include "nrf_pwm.h"
-#include "hal/pwmout_api.h"
+
 
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
-#define OUT (uint32_t*)0x50000504 //Out pin
+#define GPIO_OUT (uint32_t*)0x50000504 //Out pin
 
 #define Register (uint8_t)13 //Register 13 for for P0.13
+//used 4 for testing (A0)
+#define LED_RED_PIN (uint8_t)5 //24
+#define LED_GREEN_PIN (uint8_t)16 //16
+#define LED_BLUE_PIN (uint8_t)6
 
-#define LED_RED_PIN (uint8_t)24
-#define LED_GREEN_PIN (uint8_t)16
-#define LED_BLUE_PIN (uint8_t)8
+
+nrf_pwm_values_individual_t seq_values;
 
 //Information Being Sent
 typedef struct{
@@ -21,7 +24,7 @@ typedef struct{
     float duty_cycle;
 } message_t;
 
-int period = 2;
+int period = 10;//ms
 
 //prepare memory pool
 MemoryPool<message_t, 9> poolV;
@@ -49,17 +52,34 @@ void ice_cream_man(){
         message_t *messageC = poolC.alloc();
         message_t *messageS = poolS.alloc();
 
-        //data setting to diff values
-        messageV->duty_cycle = 100;
-        messageC->duty_cycle = 250;
-        messageS->duty_cycle = 1000;
+/*
+        //data setting to diff values - Percent
+        messageV->duty_cycle = .10;
+        messageC->duty_cycle = .25;
+        messageS->duty_cycle = .50;
 
         //put info on queues
         queueV.put(messageV); 
         queueC.put(messageC);
         queueS.put(messageS);
+*/
+    if(messageV != NULL)
+{
+    messageV->duty_cycle = .10;
+    queueV.put(messageV);
+}
+if(messageC != NULL)
+{
+    messageC->duty_cycle = .25;
+    queueC.put(messageC);
+}
+if(messageS != NULL)
+{
+    messageS->duty_cycle = .50;
+    queueS.put(messageS);
+}
 
-        thread_sleep_for(100);
+        thread_sleep_for(period*3);
     }
 }
 
@@ -68,37 +88,41 @@ void ice_cream_man(){
 //Named Vanilla - will rapidly flash green light. 
 //should rely on a queue for percentage PWM
 void vanilla(){
-    
     while(1){
     osEvent evt = queueV.get();
-
+    
     if(evt.status == osEventMessage)
     {
             //receive message
             message_t* messageV = (message_t*)evt.value.p;
 
             float dutyV = messageV->duty_cycle;
+            float time_on = period*dutyV;
+            float time_off = period - period*dutyV;
 
-            while(1){
-            //Flash at set rate
-            setbit(OUT, LED_GREEN_PIN);
-            //setbit(OUT, Register);
-            thread_sleep_for(dutyV);
-            
-            clearbit(OUT, LED_GREEN_PIN);
+            //glow at set rate
+            clearbit(GPIO_OUT, LED_GREEN_PIN);
             //clearbit(OUT, Register);
-            thread_sleep_for(dutyV);
-            }
+            thread_sleep_for(time_on);
+
+            setbit(GPIO_OUT, LED_GREEN_PIN);
+            //setbit(OUT, Register);
+            thread_sleep_for(time_off);
             poolV.free(messageV);
+            
+            
+            }
+            
         }
     }   
-}
+
 
 //use pwm out class to do the same as vanilla (diff speed)
 void chocolate(){
     //receive message
-            PwmOut led(LED_BLUE_PIN);
-            LED_BLUE_PIN.period(period);
+            PwmOut LED_BLUE{PinName(LED_BLUE_PIN)};
+
+            LED_BLUE.period_ms(period);
 
             while(1){
 
@@ -109,10 +133,10 @@ void chocolate(){
 
                 message_t* messageC = (message_t*)evt.value.p;
 
-                float dutyC_Percent = (messageC->duty_cycle)/1000;
+                float dutyC_Percent = (messageC->duty_cycle);
     
 
-                led.write(dutyC_Percent);
+                LED_BLUE.write(1-dutyC_Percent);
 
                 poolC.free(messageC);
 
@@ -127,30 +151,49 @@ void chocolate(){
 
 //use HAL to do the same
 void strawberry(){
-    pwmout_t pwm;
-    pwmout_init(&pwm, LED_RED_PIN);
+
+    // Configure PWM once
+    NRF_PWM0->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1;
+    NRF_PWM0->COUNTERTOP = period;
+    NRF_PWM0->MODE = NRF_PWM_MODE_UP;
+    NRF_PWM0->DECODER = PWM_DECODER_LOAD_Individual;
+
+    NRF_PWM0->SEQ[0].PTR = (uint32_t)&seq_values;
+    NRF_PWM0->SEQ[0].CNT = 1;
+    NRF_PWM0->SEQ[0].REFRESH = 0;
+    NRF_PWM0->SEQ[0].ENDDELAY = 0;
+
+    NRF_PWM0->PSEL.OUT[0] = LED_RED_PIN;
+
+    nrf_pwm_enable(NRF_PWM0);
 
     while(1){
-    osEvent evt = queueV.get();
 
-    if(evt.status == osEventMessage)
-    {
-            //receive message
+        osEvent evt = queueS.get();
+
+        if(evt.status == osEventMessage)
+        {
             message_t* messageS = (message_t*)evt.value.p;
 
-            float dutyS_Percent = (messageS->duty_cycle)/1000;
-            pwmout_write(&pwm, dutyS_Percent);
-            pwmout_period_ms(&pwm, period);
+            float dutyS_Percent = messageS->duty_cycle;
 
-            pwmout_free(&pwm);
+            seq_values.channel_0 =
+                (uint16_t)(period * dutyS_Percent);
+
+            NRF_PWM0->TASKS_SEQSTART[0] = 1;
+
+            poolS.free(messageS);
         }
     }
-
 }
 
 // main() runs in its own thread in the OS
 int main()
 {
+    setbit(DIR, LED_GREEN_PIN);
+    //setbit(DIR, LED_BLUE_PIN);
+    setbit(DIR, LED_RED_PIN);
+
     ice_cream_man_Thread.start(ice_cream_man);
     vanilla_Thread.start(vanilla);
     chocolate_Thread.start(chocolate);
