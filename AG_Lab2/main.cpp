@@ -5,15 +5,15 @@
 #include "PwmOut.h"
 #include "nrf_pwm.h"
 
-
+#define PWM_TOP 20000
 #define DIR (uint32_t*)0x50000514 //DIR (for setup)
 #define GPIO_OUT (uint32_t*)0x50000504 //Out pin
 
 #define Register (uint8_t)13 //Register 13 for for P0.13
 //used 4 for testing (A0)
-#define LED_RED_PIN (uint8_t)5 //24
+#define LED_RED_PIN (uint8_t)24//24
 #define LED_GREEN_PIN (uint8_t)16 //16
-#define LED_BLUE_PIN (uint8_t)6
+#define LED_BLUE_PIN (uint8_t)6//6
 
 
 nrf_pwm_values_individual_t seq_values;
@@ -65,17 +65,17 @@ void ice_cream_man(){
 */
     if(messageV != NULL)
 {
-    messageV->duty_cycle = .10;
+    messageV->duty_cycle = .33;
     queueV.put(messageV);
 }
 if(messageC != NULL)
 {
-    messageC->duty_cycle = .25;
+    messageC->duty_cycle = .75;
     queueC.put(messageC);
 }
 if(messageS != NULL)
 {
-    messageS->duty_cycle = .50;
+    messageS->duty_cycle = .5;
     queueS.put(messageS);
 }
 
@@ -97,8 +97,8 @@ void vanilla(){
             message_t* messageV = (message_t*)evt.value.p;
 
             float dutyV = messageV->duty_cycle;
-            float time_on = period*dutyV;
-            float time_off = period - period*dutyV;
+            int time_on = period*dutyV;
+            int time_off = period - period*dutyV;
 
             //glow at set rate
             clearbit(GPIO_OUT, LED_GREEN_PIN);
@@ -150,12 +150,14 @@ void chocolate(){
 }
 
 //use HAL to do the same
-void strawberry(){
+void strawberry()
+{
+    NRF_PWM0->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_8;
 
-    // Configure PWM once
-    NRF_PWM0->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1;
-    NRF_PWM0->COUNTERTOP = period;
+    NRF_PWM0->COUNTERTOP = PWM_TOP;
+
     NRF_PWM0->MODE = NRF_PWM_MODE_UP;
+
     NRF_PWM0->DECODER = PWM_DECODER_LOAD_Individual;
 
     NRF_PWM0->SEQ[0].PTR = (uint32_t)&seq_values;
@@ -167,18 +169,20 @@ void strawberry(){
 
     nrf_pwm_enable(NRF_PWM0);
 
-    while(1){
-
+    while (1)
+    {
         osEvent evt = queueS.get();
 
-        if(evt.status == osEventMessage)
+        if (evt.status == osEventMessage)
         {
-            message_t* messageS = (message_t*)evt.value.p;
+            message_t *messageS = (message_t *)evt.value.p;
 
             float dutyS_Percent = messageS->duty_cycle;
 
-            seq_values.channel_0 =
-                (uint16_t)(period * dutyS_Percent);
+            uint16_t duty =
+                (uint16_t)(PWM_TOP * dutyS_Percent);
+
+            seq_values.channel_0 = 0x8000 | duty;
 
             NRF_PWM0->TASKS_SEQSTART[0] = 1;
 
