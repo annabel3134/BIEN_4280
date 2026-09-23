@@ -11,8 +11,8 @@
 
 #define Register (uint8_t)13 //Register 13 for for P0.13
 //used 4 for testing (A0)
-#define LED_RED_PIN (uint8_t)24//24
-#define LED_GREEN_PIN (uint8_t)16 //16
+#define LED_RED_PIN (uint8_t)5//24
+#define LED_GREEN_PIN (uint8_t)4 //16
 #define LED_BLUE_PIN (uint8_t)6//6
 
 
