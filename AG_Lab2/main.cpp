@@ -3,6 +3,7 @@
    Description: Main Function - All 3 RGB lights glow at different rates and use queues and memory pool to do so
 */
 
+/*
 //Part 3 of the lab
 #include "mbed.h"
 #include "USBSerial.h"
@@ -393,9 +394,11 @@ int main()
         thread_sleep_for(1000);
     }
 }
+*/
+
 
 //Part 2 of the lab
-/* #include "mbed.h"
+#include "mbed.h"
 #include "USBSerial.h"
 #include "AGabriel_binaryutils.hpp"
 #include "nrf_pwm.h"
@@ -405,9 +408,9 @@ int main()
 #define GPIO_OUT (uint32_t*)0x50000504
 
 // LED Declaration
-#define LED_RED_PIN   (uint8_t)24
-#define LED_GREEN_PIN (uint8_t)16
-#define LED_BLUE_PIN  (uint8_t)6
+#define LED_RED_PIN   (uint8_t)4 //24
+#define LED_GREEN_PIN (uint8_t)16 //16
+#define LED_BLUE_PIN  (uint8_t)5 //6
 
 
 // Struct for messages - for queue and mempool
@@ -436,18 +439,18 @@ Thread iceCreamManThread;
 // Ticker used for vanilla - faster than usual bitset and such (sleep)
 Ticker vanillaTicker;
 
-float vanillaDuty = 1.0f / 3.0f;
+volatile float vanillaDuty = 1.0f / 3.0f;
+//volatile float vanillaDuty = 0.9f;
 
 #define VANILLA_TICK 100 //100 micro seconds
 
 //Function called by ticker
 void vanillaISR()
 {
-    int counter = 0;
+    static int counter = 0;
 
-    int Ticks = (int)(vanillaDuty * 100.0f); //Calculating time on
+    int Ticks = (int)(vanillaDuty * 100.0f);
 
-    // Turn LED on and off by duty cycle
     if (counter < Ticks)
     {
         clearbit(GPIO_OUT, LED_GREEN_PIN);
@@ -701,4 +704,3 @@ int main()
     }
 }
 
-*/
