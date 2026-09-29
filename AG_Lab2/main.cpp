@@ -408,9 +408,9 @@ int main()
 #define GPIO_OUT (uint32_t*)0x50000504
 
 // LED Declaration
-#define LED_RED_PIN   (uint8_t)4 //24
+#define LED_RED_PIN   (uint8_t)24 //24
 #define LED_GREEN_PIN (uint8_t)16 //16
-#define LED_BLUE_PIN  (uint8_t)5 //6
+#define LED_BLUE_PIN  (uint8_t)6 //6
 
 
 // Struct for messages - for queue and mempool
@@ -688,8 +688,8 @@ int main()
 
     // Start threads
     vanillaThread.start(vanilla);
-    //chocolateThread.start(chocolate);
-    //strawberryThread.start(strawberry);
+    chocolateThread.start(chocolate);
+    strawberryThread.start(strawberry);
     vanillaTicker.attach_us(&vanillaISR, VANILLA_TICK);
 
     // Start the man
