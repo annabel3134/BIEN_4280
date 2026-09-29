@@ -439,8 +439,9 @@ Thread iceCreamManThread;
 // Ticker used for vanilla - faster than usual bitset and such (sleep)
 Ticker vanillaTicker;
 
-volatile float vanillaDuty = 1.0f / 3.0f;
+//volatile float vanillaDuty = 1.0f / 3.0f;
 //volatile float vanillaDuty = 0.9f;
+float vanillaDuty;
 
 #define VANILLA_TICK 100 //100 micro seconds
 
@@ -471,11 +472,7 @@ void vanillaISR()
 //vanilla thread
 void vanilla()
 {
-    //Initialize led
-    setbit(DIR, LED_GREEN_PIN);
-    setbit(GPIO_OUT, LED_GREEN_PIN);
-
-    vanillaTicker.attach_us(&vanillaISR, VANILLA_TICK);
+    
 
     while (true)
     {
@@ -691,8 +688,9 @@ int main()
 
     // Start threads
     vanillaThread.start(vanilla);
-    chocolateThread.start(chocolate);
-    strawberryThread.start(strawberry);
+    //chocolateThread.start(chocolate);
+    //strawberryThread.start(strawberry);
+    vanillaTicker.attach_us(&vanillaISR, VANILLA_TICK);
 
     // Start the man
     iceCreamManThread.start(ice_cream_man);
