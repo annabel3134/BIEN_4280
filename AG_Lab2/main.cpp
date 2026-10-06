@@ -38,9 +38,9 @@ struct ice_cream_message_t
 MemoryPool<ice_cream_message_t, 32> iceCreamPool;
 
 //Declare all queues - one for each flavor
-Queue<ice_cream_message_t, 16> vanillaQueue;
-Queue<ice_cream_message_t, 16> chocolateQueue;
-Queue<ice_cream_message_t, 16> strawberryQueue;
+Queue<ice_cream_message_t, 9> vanillaQueue;
+Queue<ice_cream_message_t, 9> chocolateQueue;
+Queue<ice_cream_message_t, 9> strawberryQueue;
 
 
 // Ticker used for vanilla - faster than usual bitset and such (sleep)
